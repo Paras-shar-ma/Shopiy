@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="../stylesheet/home.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js"
+    integrity="sha512-6BTOlkauINO65nLhXhthZMtepgJSghyimIalb+crKRPhvhmsCdnIuGcVbR5/aQY2A+260iC1OPy1oCdB6pSSwQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="../javaScript/flashMessages.js"></script>
+</head>
+
+<body>
+  <%- include('partials/header') %>
+    <div
+      class="w-full min-h-screen bg-gradient-to-br from-zinc-900 to-blue-900 text-white flex flex-col items-center p-4 sm:p-10">
+      <% if(typeof queryMessage !=='undefined' && queryMessage){%>
+
+        <div class="toast h-full w-full flex justify-center items-center  ">
+          <div class="w-auto px-4 py-3 bg-red-500  rounded-lg text-white">
+            <%= queryMessage %>
+          </div>
+        </div>
+        <%}%>
+          <div class="max-w-6xl w-full flex flex-col md:flex-row items-top justify-between gap-10">
+
+            <!-- Left: Product Image -->
+            <div class="w-full md:w-1/2 flex justify-center item-center relative group">
+              <img src="<%=product.image 
+              ? `data:image/jpeg;base64,${product.image.toString('base64')}` 
+              : '/images/default.png' %>" alt="Product Image"
+                class="w-full max-w-sm sm:w-96 sm:h-96 object-cover rounded-xl shadow-lg border border-zinc-700 <%= product.isOutOfStock ? 'blur-md opacity-40 grayscale' : '' %>">
+              <% if(product.isOutOfStock) { %>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div
+                    class="bg-red-600/90 text-white font-black text-3xl py-3 px-16 rotate-[-15deg] shadow-2xl border-y-4 border-white uppercase tracking-widest animate-pulse whitespace-nowrap">
+                    Out of Stock
+                  </div>
+                </div>
+                <% } %>
+            </div>
+
+            <!-- Right: Product Details -->
+            <div class="w-full md:w-1/2 space-y-5">
+              <h2 class="text-3xl font-semibold">
+                <%=product.name%>
+              </h2>
+              <p class="text-zinc-300 leading-relaxed">
+                <%= product.description%>
+              </p>
+              <div class="text-2xl font-semibold">
+                <!-- ₹999 <span class="text-zinc-400 text-lg line-through ml-2">₹1299</span>
+        <span class="text-green-400 text-lg ml-2">25% OFF</span> -->
+                <%if(product.discount>0){%>
+                  <span class="text-2xl">
+                    <%= product.price===0?0:product.price * (1 - product.discount / 100) %>
+                  </span>
+                  <span class="text-zinc-400 text-lg line-through ml-2">₹<%=product.price%></span>
+                  <span class="text-green-400 text-lg ml-2">
+                    <%=product.discount%>% OFF
+                  </span>
+
+                  <%}else{%>
+                    <span class="text-2xl">
+                      <%= product.price%>
+                    </span>
+                    <%}%>
+              </div>
+
+              <!-- Add to Cart Button -->
+              <% if(typeof isOwner === 'undefined' || !isOwner) { %>
+                <% if(product.isOutOfStock) { %>
+                  <button disabled
+                    class="w-auto mt-30 bg-zinc-600 cursor-not-allowed text-white px-8 py-3 rounded-lg font-semibold shadow-md">
+                    Out of Stock
+                  </button>
+                <% } else { %>
+                    <a href="/user/addtocart/<%= product._id%>"
+                      class="w-auto mt-30 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold shadow-md transition duration-300">
+                      Add to Cart
+                    </a>
+                <% } %>
+              <% } else { %>
+                <div class="mt-30 text-zinc-400 font-semibold italic">Viewing as owner</div>
+              <% } %>
+
+            </div>
+
+          </div>
+    </div>
+
+</body>
+
+</html>

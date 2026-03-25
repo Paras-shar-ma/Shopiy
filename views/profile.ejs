@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+  <link rel="stylesheet" href="../stylesheet/home.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js"
+    integrity="sha512-6BTOlkauINO65nLhXhthZMtepgJSghyimIalb+crKRPhvhmsCdnIuGcVbR5/aQY2A+260iC1OPy1oCdB6pSSwQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="../javaScript/flashMessages.js"></script>
+  <script src="../javaScript/submitImage.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white">
+  <%- include('partials/header') %>
+
+    <div class="profile w-full min-h-screen flex flex-col items-center py-8 sm:py-16 px-4 sm:px-0">
+
+      <!-- Profile Image + Username -->
+      <div
+        class="user flex flex-col md:flex-row items-center text-center md:text-left gap-4 md:gap-8 backdrop-blur-md bg-white/10 px-6 sm:px-10 py-6 rounded-2xl shadow-xl border border-white/20 hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-all duration-300">
+
+        <div class="relative h-32 w-32 group">
+          <form action="/user/uploadProfile" id="uploadForm" method="post" enctype="multipart/form-data"
+            class="absolute inset-0">
+            <div
+              class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-400 via-indigo-500 to-purple-600 blur-lg animate-pulse">
+            </div>
+            <div
+              class="profileimg relative h-full w-full rounded-full border-4 border-white overflow-hidden shadow-md cursor-pointer">
+
+
+              <img class="h-full w-full object-cover" src="<%= user.profilepic 
+              ? `data:image/jpeg;base64,${user.profilepic.toString('base64')}` 
+              : '../images/default.png' %>" alt="Profile">
+              <input type="file" id="profileImage" class="absolute inset-0 opacity-0 cursor-pointer z-10" name="image"
+                title="Click to change profile picture">
+              <div
+                class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <p class="text-sm font-semibold">Click to Upload</p>
+              </div>
+              <!-- <button type="submit" class="font-bold text-red z-11">Upload</button> -->
+            </div>
+          </form>
+        </div>
+
+        <div class="name">
+          <h2 class="text-4xl font-semibold tracking-wide">Hi, <%= user.name %>
+          </h2>
+          <p class="text-gray-300 text-sm mt-2">Welcome back 👋</p>
+        </div>
+      </div>
+
+      <!-- Profile Features -->
+      <div class="features flex flex-col mt-12 space-y-5 text-lg font-semibold w-full max-w-2xl px-6">
+        <div class="flex flex-col space-y-3 items-center">
+          <a class="hover:text-yellow-300 hover:scale-105 transition-all duration-200"
+            href="/user/edituser/<%=user._id%>">Edit Profile</a>
+          <% if (isOwner) { %>
+            <a class="hover:text-yellow-300 hover:scale-105 transition-all duration-200" href="/owner/listproduct">List
+              Product</a>
+            <a class="hover:text-yellow-300 hover:scale-105 transition-all duration-200" href="">Add Discount</a>
+            <% } %>
+              <a class="text-red-400 hover:text-red-600 hover:scale-105 transition-all duration-200"
+                href="/user/logout">Logout</a>
+        </div>
+
+        <% if (!isOwner) { %>
+          <!-- Order List for Users -->
+          <div class="mt-10 w-full">
+            <h3 class="text-2xl font-bold mb-6 border-b border-white/20 pb-2">Your Orders <i
+                class="fa-solid fa-cart-shopping ml-2 text-yellow-400"></i></h3>
+            <% if (user.orders && user.orders.length> 0) { %>
+              <div class="space-y-4">
+                <% user.orders.reverse().forEach(order=> { %>
+                  <div
+                    class="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center justify-between hover:bg-white/10 transition">
+                    <div class="flex items-center gap-4">
+                      <div class="h-16 w-16 bg-zinc-800 rounded-lg overflow-hidden border border-white/20">
+                        <% if (order.product && order.product.image) { %>
+                          <img src="data:image/jpeg;base64,<%= order.product.image.toString('base64') %>"
+                            class="h-full w-full object-cover">
+                          <% } else { %>
+                            <div class="h-full w-full flex items-center justify-center text-xs text-gray-500 italic">No
+                              Img</div>
+                            <% } %>
+                      </div>
+                      <div>
+                        <h4 class="font-bold text-lg text-white">
+                          <%= order.product ? order.product.name : 'Unknown Product' %>
+                        </h4>
+                        <p class="text-gray-400 text-sm">
+                          <%= new Date(order.date).toLocaleDateString() %>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-yellow-400 font-bold">₹<%= order.product ? order.product.price : 0 %>
+                      </p>
+                      <span
+                        class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full uppercase tracking-tighter">Ordered</span>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+              <% } else { %>
+                <div class="text-center py-10 bg-white/5 rounded-2xl border border-dashed border-white/20">
+                  <p class="text-gray-400">You haven't placed any orders yet.</p>
+                  <a href="/" class="text-blue-400 hover:underline mt-2 block">Go Shopping</a>
+                </div>
+                <% } %>
+          </div>
+          <% } else { %>
+            <!-- Sales Analytics for Owners -->
+            <div class="mt-16 w-full max-w-4xl mx-auto">
+              <div class="flex items-center justify-between mb-8">
+                <h3 class="text-2xl font-bold">Sales Analytics <i class="fa-solid fa-chart-line ml-2 text-blue-400"></i>
+                </h3>
+                <div class="flex gap-2">
+                  <button onclick="updateChart('day')"
+                    class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-xs transition">Day</button>
+                  <button onclick="updateChart('month')"
+                    class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-xs transition">Month</button>
+                  <button onclick="updateChart('year')"
+                    class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-xs transition">Year</button>
+                </div>
+              </div>
+
+              <div class="bg-zinc-900/50 p-6 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-sm">
+                <canvas id="salesChart" height="150"></canvas>
+              </div>
+
+              <div class="grid grid-cols-3 gap-4 mt-6">
+                <div class="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
+                  <span class="text-gray-400 text-xs uppercase block">Total Revenue</span>
+                  <span class="text-xl font-bold" id="totalRevenue">₹0</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
+                  <span class="text-gray-400 text-xs uppercase block">Total Orders</span>
+                  <span class="text-xl font-bold" id="totalOrders">0</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
+                  <span class="text-gray-400 text-xs uppercase block">Avg Value</span>
+                  <span class="text-xl font-bold" id="avgOrderValue">₹0</span>
+                </div>
+              </div>
+            </div>
+
+            <script>
+              const rawSalesData = <%- JSON.stringify(salesData) %>;
+              let chart;
+
+              function processData(timeframe) {
+                const dataMap = {};
+                let totalRev = 0;
+
+                rawSalesData.forEach(item => {
+                  const date = new Date(item.date);
+                  let key;
+
+                  if (timeframe === 'day') {
+                    key = date.toLocaleDateString();
+                  } else if (timeframe === 'month') {
+                    key = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
+                  } else {
+                    key = date.getFullYear().toString();
+                  }
+
+                  dataMap[key] = (dataMap[key] || 0) + item.price;
+                  totalRev += item.price;
+                });
+
+                return {
+                  labels: Object.keys(dataMap),
+                  values: Object.values(dataMap),
+                  totalRevenue: totalRev,
+                  totalOrders: rawSalesData.length
+                };
+              }
+
+              function updateChart(timeframe) {
+                const result = processData(timeframe);
+
+                document.getElementById('totalRevenue').textContent = `₹${result.totalRevenue}`;
+                document.getElementById('totalOrders').textContent = result.totalOrders;
+                document.getElementById('avgOrderValue').textContent = result.totalOrders > 0
+                  ? `₹${(result.totalRevenue / result.totalOrders).toFixed(2)}`
+                  : '₹0';
+
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                if (chart) chart.destroy();
+
+                if (result.totalOrders === 0) {
+                  // Handle empty state
+                  return;
+                }
+
+                chart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                    labels: result.labels,
+                    datasets: [{
+                      label: 'Sales (₹)',
+                      data: result.values,
+                      borderColor: '#3b82f6',
+                      fill: false,
+                      tension: 0.4,
+                      borderWidth: 3,
+                      pointBackgroundColor: '#3b82f6',
+                      pointRadius: 4
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    plugins: {
+                      legend: { display: false }
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#a1a1aa' }
+                      },
+                      x: {
+                        grid: { display: false },
+                        ticks: { color: '#a1a1aa' }
+                      }
+                    }
+                  }
+                });
+              }
+
+              if (Array.isArray(rawSalesData) && rawSalesData.length > 0) {
+                updateChart('day');
+              } else {
+                console.log("No sales data available");
+              }
+            </script>
+            <% } %>
+      </div>
+
+    </div>
+</body>
+
+</html>

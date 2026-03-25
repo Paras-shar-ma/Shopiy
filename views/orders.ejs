@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link rel="stylesheet" href="../stylesheet/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="../javaScript/flashMessages.js"></script>
+</head>
+
+<body>
+    <%- include('partials/header') %>
+
+        <div class="main min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 px-4 sm:px-6 py-6 sm:py-10 text-white">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold tracking-wide">Order History</h2>
+                <p class="text-zinc-400 mt-1">Items you've purchased</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto space-y-6">
+                <% if (user.orders.length===0) { %>
+                    <div class="text-center py-20 bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-700">
+                        <p class="text-zinc-400">You haven't placed any orders yet.</p>
+                        <a href="/" class="text-blue-400 hover:underline mt-4 inline-block">Start Shopping</a>
+                    </div>
+                    <% } else { %>
+                        <% user.orders.slice().reverse().forEach((order)=> { %>
+                            <% const product=order.product; %>
+                                <% if (product) { %>
+                                    <div
+                                        class="order-card flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left bg-zinc-800/60 p-4 rounded-xl border border-zinc-700 shadow-md">
+                                        <img src="<%= product.image ? `data:image/jpeg;base64,${product.image.toString('base64')}` : '/images/default.png' %>"
+                                            class="h-24 w-24 object-cover rounded-lg border border-zinc-600 mb-4 sm:mb-0">
+                                        <div class="sm:ml-6 flex-1 w-full">
+                                            <h3 class="text-xl font-bold">
+                                                <%= product.name %>
+                                            </h3>
+                                            <p class="text-zinc-400 text-sm mt-1 line-clamp-2">
+                                                <%= product.description %>
+                                            </p>
+                                            <div class="mt-2 flex justify-between items-center">
+                                                <span class="text-blue-400 font-bold text-lg">₹<%= product.price %>
+                                                        </span>
+                                                <span class="text-zinc-500 text-xs italic">Purchased on <%= new
+                                                        Date(order.date).toLocaleDateString() %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                        <% }) %>
+                                            <% } %>
+            </div>
+        </div>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 min-h-screen text-white flex flex-col items-center ">
+  <%- include('partials/header') %>
+
+  <div class="backdrop-blur-md bg-white/10 px-10 py-10 rounded-2xl shadow-xl border border-white/20 w-[90%] sm:w-[450px] mt-10">
+    <h2 class="text-3xl font-bold text-center mb-8">Edit Profile</h2>
+
+    <form action="/user/updateProfile" method="POST" enctype="multipart/form-data" class="flex flex-col gap-6">
+   
+      <!-- Username -->
+      <div>
+        <label class="block text-sm mb-2 font-semibold">Username</label>
+        <input
+          type="text"
+          name="name"
+          value="<%= user.name %>"
+          required
+          class="w-full p-3 rounded-lg bg-white/20 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          placeholder="Enter your username"
+        />
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm mb-2 font-semibold">Email</label>
+        <input
+          type="email"
+          name="email"
+          value="<%= user.email %>"
+          required
+          class="w-full p-3 rounded-lg bg-white/20 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          placeholder="Enter your email"
+        />
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-sm mb-2 font-semibold">Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter new password"
+          class="w-full p-3 rounded-lg bg-white/20 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="mt-6 bg-yellow-400 text-black font-semibold py-3 rounded-lg hover:bg-yellow-300 transition-all"
+      >
+        Save Changes
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>

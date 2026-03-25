@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../stylesheet/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="../javaScript/flashMessages.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js" integrity="sha512-6BTOlkauINO65nLhXhthZMtepgJSghyimIalb+crKRPhvhmsCdnIuGcVbR5/aQY2A+260iC1OPy1oCdB6pSSwQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <div class="main min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 px-4 py-10 sm:py-0">
+      <% if(typeof queryMessage !== 'undefined' && queryMessage){%>
+        <div class="toast  fixed top-0 w-77  flex justify-center items-center  ">
+            <div class="px-3 py-2 bg-red-700  rounded-lg text-white">
+                <%= queryMessage %>
+            </div>
+        </div>
+        <%}%>
+  <div class="w-full max-w-lg bg-zinc-800 rounded-2xl shadow-xl p-6 sm:p-8">
+    
+    
+    <!-- Title -->
+    <div class="title mb-6 text-center">
+      <h2 class="text-3xl font-bold text-white tracking-wide">List Your Product</h2>
+      <p class="text-zinc-400 text-sm mt-1">Add product details below</p>
+    </div>
+
+    <!-- Form -->
+    <form action="/products/create" method="post" enctype="multipart/form-data" class="flex flex-col space-y-5">
+      
+      <input type="file" name="productimage"
+        class="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold
+               file:bg-blue-600 file:text-white hover:file:bg-blue-700 text-zinc-200" />
+
+      <input type="text" name="productname" placeholder="Product Name"
+        class="bg-zinc-700 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400" />
+
+      <div class="relative">
+        <textarea name="description" id="descInput" placeholder="Describe about your product (max 250 words)"
+          class="bg-zinc-700 w-full text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400 h-28 resize-none" maxlength="2000"></textarea>
+        <span id="wordCountDisplay" class="absolute bottom-2 right-3 text-xs text-zinc-400">0 / 250 words</span>
+      </div>
+
+      <script>
+        const descInput = document.getElementById('descInput');
+        const wordCountDisplay = document.getElementById('wordCountDisplay');
+        descInput.addEventListener('input', function() {
+          let words = this.value.trim().split(/\s+/).filter(w => w.length > 0);
+          if (words.length > 250) {
+            this.value = words.slice(0, 250).join(" ");
+            words = words.slice(0, 250);
+          }
+          wordCountDisplay.textContent = `${words.length} / 250 words`;
+          wordCountDisplay.className = words.length >= 250 
+            ? "absolute bottom-2 right-3 text-xs text-red-400" 
+            : "absolute bottom-2 right-3 text-xs text-zinc-400";
+        });
+      </script>
+
+      <input type="number" name="price" placeholder="Product Price"
+        class="bg-zinc-700 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400" />
+
+      <input type="number" name="discount" placeholder="Discount? (in %)"
+        class="bg-zinc-700 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400" />
+
+      <input type="submit" value="List Product"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 cursor-pointer" />
+    </form>
+
+  </div>
+</div>
+
+</body>
+</html>

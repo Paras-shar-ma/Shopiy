@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics</title>
+    <link rel="stylesheet" href="../stylesheet/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-zinc-950 text-white">
+    <%- include('partials/header') %>
+
+        <div class="main min-h-screen p-4 sm:p-6 lg:p-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-10">
+                    <div>
+                        <h2 class="text-3xl font-bold tracking-tight">Sales Analytics</h2>
+                        <p class="text-zinc-400 mt-1">Monitor your store's performance</p>
+                    </div>
+                    <div class="flex gap-2 mt-4 md:mt-0">
+                        <button onclick="updateChart('day')"
+                            class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm transition">Daily</button>
+                        <button onclick="updateChart('month')"
+                            class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm transition">Monthly</button>
+                        <button onclick="updateChart('year')"
+                            class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm transition">Yearly</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-8">
+                    <!-- Main Chart -->
+                    <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                        <canvas id="salesChart" height="100"></canvas>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+                            <h3 class="text-zinc-400 text-sm font-medium">Total Revenue</h3>
+                            <p class="text-3xl font-bold mt-2" id="totalRevenue">₹0</p>
+                        </div>
+                        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+                            <h3 class="text-zinc-400 text-sm font-medium">Total Orders</h3>
+                            <p class="text-3xl font-bold mt-2" id="totalOrders">0</p>
+                        </div>
+                        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+                            <h3 class="text-zinc-400 text-sm font-medium">Avg. Order Value</h3>
+                            <p class="text-3xl font-bold mt-2" id="avgOrderValue">₹0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const rawSalesData = <%- JSON.stringify(salesData) %>;
+            let chart;
+
+            function processData(timeframe) {
+                const dataMap = {};
+                let totalRev = 0;
+
+                rawSalesData.forEach(item => {
+                    const date = new Date(item.date);
+                    let key;
+
+                    if (timeframe === 'day') {
+                        key = date.toLocaleDateString();
+                    } else if (timeframe === 'month') {
+                        key = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
+                    } else {
+                        key = date.getFullYear().toString();
+                    }
+
+                    dataMap[key] = (dataMap[key] || 0) + item.price;
+                    totalRev += item.price;
+                });
+
+                return {
+                    labels: Object.keys(dataMap),
+                    values: Object.values(dataMap),
+                    totalRevenue: totalRev,
+                    totalOrders: rawSalesData.length
+                };
+            }
+
+            function updateChart(timeframe) {
+                const result = processData(timeframe);
+
+                document.getElementById('totalRevenue').textContent = `₹${result.totalRevenue}`;
+                document.getElementById('totalOrders').textContent = result.totalOrders;
+                document.getElementById('avgOrderValue').textContent = result.totalOrders > 0
+                    ? `₹${(result.totalRevenue / result.totalOrders).toFixed(2)}`
+                    : '₹0';
+
+                const ctx = document.getElementById('salesChart').getContext('2d');
+
+                if (chart) chart.destroy();
+
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.labels,
+                        datasets: [{
+                            label: 'Sales (₹)',
+                            data: result.values,
+                            borderColor: '#3b82f6',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#3b82f6',
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: '#71717a' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#71717a' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize with daily view
+            updateChart('day');
+        </script>
+</body>
+
+</html>

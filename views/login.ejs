@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="../javaScript/flashMessages.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+ <!-- your script file -->
+
+</head>
+<body>
+
+    <div class="w-full h-screen flex items-center justify-center bg-gray-700">
+      <% if(typeof queryMessage !== 'undefined' && queryMessage){%>
+        <div class="toast  fixed top-0 w-77  flex justify-center items-center  ">
+            <div class="px-3 py-2 bg-red-700  rounded-lg text-white">
+                <%= queryMessage %>
+            </div>
+        </div>
+        <%}%>
+        
+  <!-- Base Container -->
+  <div class="base bg-zinc-600 h-84 w-3/4 rounded-2xl flex items-center justify-between relative shadow-2xl ">
+
+    <!-- Register Section  -->
+    <div class="register absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[10%] h-[130%] w-[30%] bg-gradient-to-br from-pink-500 to-red-500 flex flex-col items-center justify-center text-white shadow-lg z-10 ml-20 rounded-2xl">
+      <h2 class="text-3xl font-bold mb-6">Register</h2>
+
+      <form action="/user/register" method="post" class="flex flex-col w-[70%]">
+        <input class="mb-4 p-3 bg-white/20 text-white placeholder-gray-200 rounded-lg outline-none font-semibold" type="text" name="name" placeholder="Full Name">
+        <input class="mb-4 p-3 bg-white/20 text-white placeholder-gray-200 rounded-lg outline-none font-semibold" type="text" name="username" placeholder="Username">
+        <input class="mb-4 p-3 bg-white/20 text-white placeholder-gray-200 rounded-lg outline-none font-semibold" type="email" name="email" placeholder="Email">
+        <input class="mb-4 p-3 bg-white/20 text-white placeholder-gray-200 rounded-lg outline-none font-semibold" type="password" name="password" placeholder="Password">
+        <input class="p-3 bg-white text-red-600 font-bold rounded-lg cursor-pointer hover:bg-red-100 transition" type="submit" value="Create Account">
+      </form>
+    </div>
+
+    <!-- Login Section (visible and aligned) -->
+    <div class="login h-full w-2/4 ml-auto  from-indigo-500 to-blue-600 flex flex-col items-center justify-center text-white  mr-3">
+      <h2 class="text-3xl font-bold mb-6">Login</h2>
+
+      <form action="/user/login" method="post" class="flex flex-col w-3/4">
+        <input class="mb-4 p-3 bg-white/20 text-white placeholder-gray-200 rounded-lg outline-none font-semibold" type="email" name="email" placeholder="Email">
+        <input class="mb-4 p-3 bg-white/20 text-white placeholder-gray-200 rounded-lg outline-none font-semibold" type="password" name="password" placeholder="Password">
+        <input class="p-3 bg-white text-blue-700 font-bold rounded-lg cursor-pointer hover:bg-blue-100 transition" type="submit" value="Login">
+      </form>
+    </div>
+
+  </div>
+</div>
+
+
+      
+</body>
+</html>

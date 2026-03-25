@@ -1,0 +1,102 @@
+<header class="w-full bg-zinc-900 text-white shadow-lg relative z-40">
+
+  <nav class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 py-4 gap-4 md:gap-0">
+
+    <div class="flex items-center w-full justify-between md:w-auto">
+      <!-- Left: Logo -->
+      <a class="text-2xl font-bold tracking-wide" href="/">Shopiy</a>
+      <button id="mobileMenuBtn" class="md:hidden text-zinc-300 hover:text-white px-3 py-1 text-2xl outline-none focus:outline-none">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- Search Bar (SSR form) -->
+    <div class="w-full md:w-auto md:flex-1 md:mx-10 lg:mx-20 flex justify-center">
+      <form action="/search" method="GET" class="relative w-full max-w-lg text-sm">
+        <input type="text" name="search" placeholder="Search products..."
+          class="w-full pl-4 pr-12 py-2 rounded-full bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-inner">
+        <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 w-8 rounded-full bg-zinc-700 text-white hover:bg-blue-600 transition flex items-center justify-center">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Right: Navigation (Desktop) -->
+    <div class="hidden md:flex items-center space-x-8 text-lg font-medium">
+      <% if(typeof isOwner === 'undefined' || !isOwner){%>
+      <a href="/cart" title="Go to your cart" class="relative group hover:text-blue-400 transition duration-300">
+        Cart
+      </a>
+      <% } %>
+
+      <%if(userid && typeof localData !=='undefined' && localData){%>
+        <a title="Profile" class="relative group hover:text-blue-400 transition duration-300 h-10 w-10 block" href="/profile">
+          <img class="h-full w-full object-cover rounded-full" src="<%= localData.profilepic 
+                      ? `data:image/jpeg;base64,${localData.profilepic.toString('base64')}` 
+                      : '../images/default.png' %>" alt="Profile"> </a>
+      <%}else{%>
+        <a href="/register" title="Create a new account" class="relative group hover:text-blue-400 transition duration-300">
+          Register/Login
+        </a>
+      <%}%>
+    </div>
+
+  </nav>
+
+</header>
+
+<!-- Mobile Sidebar (Drawer) -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] hidden opacity-0 transition-opacity duration-300 lg:hidden"></div>
+
+<div id="mobileSidebar" class="fixed inset-y-0 right-0 w-64 bg-zinc-900 border-l border-zinc-800 shadow-2xl z-[60] transform tracking-wide translate-x-full transition-transform duration-300 ease-in-out lg:hidden flex flex-col">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-800 bg-zinc-950">
+    <h2 class="text-xl font-bold tracking-wider text-white">Menu</h2>
+    <button id="closeSidebarBtn" class="text-zinc-400 hover:text-white text-2xl focus:outline-none p-2 rounded-full hover:bg-zinc-800 transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <div class="flex flex-col px-6 py-8 space-y-6 text-lg font-medium overflow-y-auto">
+    <% if(typeof isOwner === 'undefined' || !isOwner){%>
+    <a href="/cart" class="flex items-center gap-4 text-zinc-300 hover:text-blue-400 transition duration-300"><i class="fa-solid fa-cart-shopping w-6 text-center"></i> Cart</a>
+    <% } %>
+
+    <%if(userid && typeof localData !=='undefined' && localData){%>
+      <a href="/profile" class="flex items-center gap-4 text-zinc-300 hover:text-blue-400 transition duration-300">
+        <img class="h-8 w-8 object-cover rounded-full border border-zinc-700" src="<%= localData.profilepic 
+                    ? `data:image/jpeg;base64,${localData.profilepic.toString('base64')}` 
+                    : '../images/default.png' %>" alt="Profile"> 
+        <span>Profile</span>
+      </a>
+    <%}else{%>
+      <a href="/register" class="flex items-center gap-4 text-zinc-300 hover:text-blue-400 transition duration-300"><i class="fa-solid fa-user w-6 text-center"></i> Register/Login</a>
+    <%}%>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+    const mobileSidebar = document.getElementById("mobileSidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    function openSidebar() {
+      sidebarOverlay.classList.remove("hidden");
+      setTimeout(() => sidebarOverlay.classList.remove("opacity-0"), 10);
+      mobileSidebar.classList.remove("translate-x-full");
+      document.body.style.overflow = "hidden"; 
+    }
+
+    function closeSidebar() {
+      mobileSidebar.classList.add("translate-x-full");
+      sidebarOverlay.classList.add("opacity-0");
+      setTimeout(() => sidebarOverlay.classList.add("hidden"), 300);
+      document.body.style.overflow = ""; 
+    }
+
+    if(mobileMenuBtn) mobileMenuBtn.addEventListener("click", openSidebar);
+    if(closeSidebarBtn) closeSidebarBtn.addEventListener("click", closeSidebar);
+    if(sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
+  });
+</script>
