@@ -27,4 +27,6 @@ app.use('/products',productRouter);
 
 app.listen(3000,()=>{
     console.log("server is awake at 3000");
-})
+});
+
+module.exports = app;
